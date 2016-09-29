@@ -19,7 +19,7 @@ import Intents
 
 class IntentHandler: INExtension, INStartVideoCallIntentHandling {
     
-    override func handlerForIntent(intent: INIntent) -> AnyObject? {
+    override func handler(for intent: INIntent) -> Any? {
         
         if (intent is INStartVideoCallIntent) {
             return self
@@ -28,17 +28,15 @@ class IntentHandler: INExtension, INStartVideoCallIntentHandling {
     }
     
     // MARK: Resolve
-    
-    @objc(resolveContactsForStartVideoCall:completion:)
-    func resolveContacts(forStartVideoCall intent: INStartVideoCallIntent,
-                                           with completion: ([INPersonResolutionResult]) -> Void) {
+    func resolveContacts(forStartVideoCall intent: INStartVideoCallIntent, with completion: @escaping ([INPersonResolutionResult]) -> Void) {
+     
         print("resolveContacts")
-        if let contacts = intent.contacts where contacts.count > 0 {
+        if let contacts = intent.contacts , contacts.count > 0 {
             
             print(" the intent has some contacts ")
             
             var resolutionResults = [INPersonResolutionResult]()
-            let handle = INPersonHandle(value: "ContactName", type: .Unknown)
+            let handle = INPersonHandle(value: "ContactName", type: .unknown)
             let person = INPerson(personHandle: handle, nameComponents: nil, displayName: "ContactName", image: nil, contactIdentifier: "123", customIdentifier: nil)
             resolutionResults += [.success(with: person)]
             completion(resolutionResults)
@@ -50,29 +48,25 @@ class IntentHandler: INExtension, INStartVideoCallIntentHandling {
     }
     
     // MARK: Confirm
-    
-    @objc(confirmStartVideoCall:completion:)
-    func confirm(startVideoCall intent: INStartVideoCallIntent,
-                                completion: (INStartVideoCallIntentResponse) -> Void) {
+    func confirm(startVideoCall intent: INStartVideoCallIntent, completion: @escaping (INStartVideoCallIntentResponse) -> Void) {
+        
         print(" confirm(startVideoCall ")
         print(" Authorized ")
-        completion(INStartVideoCallIntentResponse(code: .Ready, userActivity: nil))
+        completion(INStartVideoCallIntentResponse(code: .ready, userActivity: nil))
     }
     
     // MARK: Handle
-    
-    @objc(handleStartVideoCall: completion:)
-    func handle(startVideoCall intent: INStartVideoCallIntent,
-                               completion: (INStartVideoCallIntentResponse) -> Void) {
+    func handle(startVideoCall intent: INStartVideoCallIntent, completion: @escaping (INStartVideoCallIntentResponse) -> Void) {
+        
         print(" handleStartVideoCall")
         if let inPerson = intent.contacts?[0] {
             // Start video call
             print("we are ready to video call")
-            completion(INStartVideoCallIntentResponse(code: .Ready, userActivity: nil))
+            completion(INStartVideoCallIntentResponse(code: .ready, userActivity: nil))
         }
         else {
             print("failure the handling")
-            completion(INStartVideoCallIntentResponse(code: .Failure, userActivity: nil))
+            completion(INStartVideoCallIntentResponse(code: .failure, userActivity: nil))
         }
     }
 }
